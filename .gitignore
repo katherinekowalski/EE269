@@ -3,3 +3,5 @@ InputData
 OutputData
 *.m~
 AedatTools
+*.tar.gz
+DvsGesture*

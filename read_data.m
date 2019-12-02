@@ -4,7 +4,7 @@ function read_data
 % 
 % Need to have the AedatTools package in the path to get the 
 % FramesFromEvents function.
-    INPUT_DIR = "InputData";
+    INPUT_DIR = "DvsGesture";
     OUTPUT_DIR = "OutputData";
 
     for f = dir(INPUT_DIR)'
@@ -17,6 +17,7 @@ function read_data
     end
 end
 
+
 function read_data_file(input_aedat, input_csv, id, outdir)
     data = ImportAedat(struct("importParams", struct("filePath", input_aedat)));
     metadata = readmatrix(input_csv);
@@ -24,7 +25,8 @@ function read_data_file(input_aedat, input_csv, id, outdir)
     FRAME_MICROSECONDS = 100000;
 
     for r = metadata'
-        ind = find(r(2) <= data.data.polarity.timeStamp <= r(3));
+        ind = find(r(2) <= data.data.polarity.timeStamp);
+        ind = find(data.data.polarity.timeStamp(ind) <= r(3));
         newaedat = struct;
         newaedat.data.polarity.polarity = data.data.polarity.polarity(ind);
         newaedat.data.polarity.x = data.data.polarity.x(ind);
@@ -33,6 +35,7 @@ function read_data_file(input_aedat, input_csv, id, outdir)
         newaedat.info.deviceAddressSpace = data.info.deviceAddressSpace;
         numFrames = ceil((r(3) - r(2)) / FRAME_MICROSECONDS);
         frames = FramesFromEvents(newaedat, numFrames, "time");
+        disp(size(frames));
         writematrix(frames, fullfile(outdir, id + "_class_" + r(1) + ".csv"));
     end
 end
