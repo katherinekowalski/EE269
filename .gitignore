@@ -1,6 +1,7 @@
 *.DS_Store
 InputData
-OutputData
+OutputData*
+data*
 *.m~
 AedatTools
 *.tar.gz
