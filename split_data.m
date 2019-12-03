@@ -30,10 +30,14 @@ val1_end = val1_start + floor(nClasses*.15);
 test1_start = val1_end + 1;
 test1_end = nClasses;
 setting= ["fluorescent", "fluorescent_led", "lab", "natural"];
+
+OUTPUT_DATA="OutputData";
+OUT_FILE="split_data.mat"
+
 for s = 1:length(setting)
     str = setting(s);
     p = randperm(nusers);
-    name = strcat("D:\\EE269\\output_data\\user*_", str, "_class_%i.csv");
+    name = fullfile(OUTPUT_DATA, "user*_" + str + "_class_%i.csv");
     for c = 1:nClasses
         a={dir(sprintf(name, c)).name};
         all= a(randperm(length(a)));
@@ -44,14 +48,16 @@ for s = 1:length(setting)
             tr_idx = tr_idx + 1;
         end
         for t = val1_start:val1_end 
-            val{val_idx} = all{t};;
+            val{val_idx} = all{t};
             val_idx = val_idx + 1;
             Y_val =[Y_val; c];
         end
         for t = test1_start:test1_end 
-            test{test_idx} = all{t};;
+            test{test_idx} = all{t};
             test_idx = test_idx + 1;
             Y_test =[Y_test; c];
         end
     end
 end
+
+save(OUT_FILE, "train", "Y_train", "val", "Y_val", "test", "Y_test");

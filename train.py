@@ -23,7 +23,7 @@ colab = False
 def get_args():
   parser = argparse.ArgumentParser()
   parser.add_argument("--log-dir", default="tuning_logs", action="store")
-  parser.add_argument("--data-dir", default="data", action="store")
+  parser.add_argument("--data-dir", default="../data", action="store")
   args_raw = parser.parse_args()
   return {
     "log_dir": args_raw.log_dir,
@@ -36,14 +36,14 @@ def get_params():
     "dense_reg": 3e-4,
     "kernel_reg": 3e-4,
     "learning_rate": 1e-3,
-    "kernel_sizes": [3, 5, 5],
-    "pool_sizes": [2,4,2], 
-    "layer_channels": [12, 18, 25], 
+    "kernel_sizes": [3, 5, 3, 3, 3],
+    "pool_sizes": [2,4,2,2,2],
+    "layer_channels": [8, 16, 24, 24, 24], 
     "batch_size": 32,
     "run_id": ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)]),
   }
 
-def train(data_dir, params, epochs=40):
+def train(data_dir, params, epochs=10):
   logger.info("getting model...")
   model = get_cnn_model_1(**params)
   logger.info("compiling model...")
@@ -54,14 +54,14 @@ def train(data_dir, params, epochs=40):
     GestureDataSequence(params["batch_size"], dset="train", data_dir=data_dir),
     validation_data=GestureDataSequence(params["batch_size"], dset="val", data_dir=data_dir), 
     epochs=epochs)
-  print (history)
+  logger.info(model.summary())
+  return history
 
 
 def main():
   args = get_args()
   params = get_params()
   train_result = train(args["data_dir"], params)
-  print (train_result)
 
 def tune():
   args = get_args()

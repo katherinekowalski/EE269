@@ -8,8 +8,12 @@ X_train = zeros(m, m, numFrames-1, length(train));
 X_val = zeros(m, m, numFrames-1, length(val));
 X_test = zeros(m, m, numFrames-1, length(test));
 
+OUTPUT_DATA = "OutputData";
+RESULT_FILE = fullfile("data", "raw_data.mat");
+
 for i=1:length(train)
-    path = strcat("D:\\EE269\\output_data\\", train{i});
+    path = fullfile(OUTPUT_DATA, train{i});
+    disp(path);
     T=readtable(path);
     T = reshape(T{:,:}, 128,128,[]);
     T = T(:,:,1:numFrames); %128,128,17
@@ -19,7 +23,7 @@ for i=1:length(train)
 end
 
 for i=1:length(val)
-    path = strcat("D:\\EE269\\output_data\\", val{i});
+    path = fullfile(OUTPUT_DATA, val{i});
     T=readtable(path);
     T = reshape(T{:,:}, 128,128,[]);
     T = T(:,:,1:numFrames); %128,128,17
@@ -29,7 +33,7 @@ for i=1:length(val)
 end
 
 for i=1:length(test)
-    path = strcat("D:\\EE269\\output_data\\", test{i});
+    path = fullfile(OUTPUT_DATA, test{i});
     T=readtable(path);
     T = reshape(T{:,:}, 128,128,[]);
     T = T(:,:,1:numFrames); %128,128,17
@@ -38,4 +42,4 @@ for i=1:length(test)
     end
 end
 %%
-save ('D:\EE269\raw_data.mat','X_train', 'Y_train','X_val', 'Y_val', 'X_test', 'Y_test')
+save (RESULT_FILE,'X_train', 'Y_train','X_val', 'Y_val', 'X_test', 'Y_test')

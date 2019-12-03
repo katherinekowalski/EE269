@@ -10,8 +10,8 @@ import logger
 
 
 class GestureDataSequence(Sequence):
-  def __init__(self, batch_size, dset="train", data_dir="data"):
-    data_mat = scipy.io.loadmat(os.path.join(data_dir, "raw_data.mat"))
+  def __init__(self, batch_size, dset="train", data_dir="../data"):
+    data_mat = scipy.io.loadmat(os.path.join(data_dir, "raw_data_new.mat"))
     if dset == "train":
       self.x, self.y = data_mat["X_train"].transpose(3,0,1,2), data_mat["Y_train"]
     elif dset == "val":
@@ -22,6 +22,7 @@ class GestureDataSequence(Sequence):
       raise ValueError
 
     self.x = self.x
+    self.y_ds_format = self.y
     self.y = to_categorical(self.y - 1)
     self.batch_size = batch_size
     self.dims = self.x.shape
@@ -48,5 +49,5 @@ class GestureDataSequence(Sequence):
       for j in range(4):
         axes[i, j].imshow(x[:, :, 4*i+j])
 
-    plt.savefig(f"example_class{self.y[idx][0]}.png")
+    plt.savefig(f"example_class{int(self.y_ds_format[idx][0])}.png")
 
