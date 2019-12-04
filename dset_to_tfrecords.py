@@ -13,9 +13,10 @@ def _bytes_feature(value):
   return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
 DATA_DIR = "../data"
+OUT_DIR
 
 def write(dset="train"):
-  out_filename = f"/Volumes/WINSTANLEY_SSD/{dset}____.tfrecords"
+  out_filename = os.path.join(OUT_DIR, f"{dset}.tfrecords")
   if dset == "train":
     x_filename = 'train.mat'
     idf = "X_train_wd"
@@ -60,8 +61,8 @@ def write(dset="train"):
 
 def main():
   write("train")
-  # write("val")
-  # write("test")
+  write("val")
+  write("test")
 
 if __name__ == "__main__":
   main()
