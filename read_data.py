@@ -93,7 +93,7 @@ def _parse_function(proto):
     return parsed_features['train/image'], parsed_features["train/label"]
 
 def get_dataset(dset="train", batch_size=32):
-  filepath = f"/Volumes/WINSTANLEY_SSD/{dset}.tfrecords"
+  filepath = "E:\\val.tfrecords"
   dataset = tf.data.TFRecordDataset(filepath)
     
   # Maps the parser on every filepath in the array. You can set the number of parallel loaders here

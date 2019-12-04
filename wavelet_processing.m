@@ -1,16 +1,14 @@
 clear all;
 close all;
 %%
-
 numFrames = 10;
 m = 128;
 %%
 X_train_wd = {};
 Y_train_wd = {};
-length_train = length(dir("D:\\EE269\\OutputDataTrain\\"))-2;
-tr_names = {dir("D:\\EE269\\OutputDataTrain\\").name}';
-for i=(round(length_train/2)+1):length_train
-    p = "D:\\EE269\\OutputDataTrain\\" + string(tr_names{i+2});
+tr_names = {dir("D:\\EE269\\data\\train\\").name}';
+for i=1:length(dir("D:\\EE269\\data\\train"))-2
+    p = "D:\\EE269\\data\\train\\" + string(tr_names{i+2})
     load (p);
     T=frames;
     sz = size(T);
@@ -34,18 +32,18 @@ for i=(round(length_train/2)+1):length_train
     X_train_wd{i} = sample_sectioned;
     Y_train_wd{i} = label_sectioned;
 end
-X_train_wd = cat(4, X_train_wd{:});
-Y_train_wd = cat(1, Y_train_wd{:});
-save ("D:\EE269\train_1.mat", "X_tr1", "Y_tr1", "-v7.3")
+% X_train_wd = cat(4, X_train_wd{:});
+% Y_train_wd = cat(1, Y_train_wd{:});
+save ("D:\EE269\train.mat", "X_train_wd", "Y_train_wd", "-v7.3")
 
 %%
 X_val_wd = {};
 Y_val_wd = {};
 
-val_names = {dir("D:\\EE269\\OutputDataVal\\").name}';
+val_names = {dir("D:\\EE269\\data\\val\\").name}';
 
-for i=1:length(dir("D:\\EE269\\OutputDataVal\\"))-2
-    p = "D:\\EE269\\OutputDataVal\\" + string(val_names{i+2});
+for i=1:length(dir("D:\\EE269\\data\\val"))-2
+    p = "D:\EE269\data\val\\" + string(val_names{i+2})
     load (p);
     T=frames;
     sz = size(T);
@@ -68,18 +66,18 @@ for i=1:length(dir("D:\\EE269\\OutputDataVal\\"))-2
     X_val_wd{i} = sample_sectioned;
     Y_val_wd{i} = label_sectioned;
 end
-X_val = cat(4, X_val_wd{:});
-Y_val = cat(1, Y_val_wd{:});
-save ("D:\EE269\val.mat", "X_val", "Y_val", "-v7.3")
+% X_val = cat(4, X_val_wd{:});
+% Y_val = cat(1, Y_val_wd{:});
+save ("D:\EE269\val.mat", "X_val_wd", "Y_val_wd", "-v7.3")
 %%
 
 
 X_test_wd = {};
 Y_test_wd = {};
-test_names = {dir("D:\\EE269\\OutputDataTest\\").name}';
+test_names = {dir("D:\\EE269\\data\\test").name}';
 
-for i=1:length(dir("D:\\EE269\\OutputDataTest\\"))-2
-    p = "D:\\EE269\\OutputDataTest\\" + string(test_names{i+2});
+for i=1:length(dir("D:\\EE269\\data\\test\\"))-2
+    p = "D:\\EE269\\data\\test\\" + string(test_names{i+2})
     load (p);
     T=frames;
     sz = size(T);
@@ -103,9 +101,9 @@ for i=1:length(dir("D:\\EE269\\OutputDataTest\\"))-2
     Y_test_wd{i} = label_sectioned;
 end
 
-X_test = cat(4, X_test_wd{:});
-Y_test = cat(1, Y_test_wd{:});
+% X_test = cat(4, X_test_wd{:});
+% Y_test = cat(1, Y_test_wd{:});
 
-save ("D:\EE269\test.mat", "X_test", "Y_test", "-v7.3")
+save ("D:\EE269\test.mat", "X_test_wd", "Y_test_wd", "-v7.3")
 %%
 % save ('D:\EE269\wavelet_data_wd.mat','X_train_wd', 'Y_train_wd','X_val_wd', 'Y_val_wd', 'X_test_wd', 'Y_test_wd')
