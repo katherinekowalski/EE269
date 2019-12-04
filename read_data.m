@@ -9,7 +9,7 @@ OUTPUT_DIR_VAL = "D:\EE269\data\val";
 OUTPUT_DIR_TEST = "D:\EE269\data\test";
 
 for f = dir(INPUT_DIR)'
-    % disp(f.name);
+    disp(f.name);
     spl = strsplit(string(f.name), ".");
 
     stem_ = string(spl(1));
@@ -19,15 +19,12 @@ for f = dir(INPUT_DIR)'
     disp(stem_);
     userid = sscanf(stem_{1}(5:6), '%d');
     output_dir = OUTPUT_DIR_TRAIN;
-    if userid <= 22
-        continue;
-    end
     if userid > 22 && userid <= 25
         output_dir = OUTPUT_DIR_VAL;
     elseif userid > 25
         output_dir = OUTPUT_DIR_TEST;
     end
-    out_fn = fullfile(output_dir, spl(1) + "_class_11.csv");
+    out_fn = fullfile(output_dir, spl(1) + "_class_11.mat");
     if exist(out_fn, 'file')
         disp("skipping " + spl(1) + " because it has already been processed.");
         continue;
@@ -43,11 +40,10 @@ function read_data_file(input_aedat, input_csv, id, outdir)
     data = ImportAedat(struct("importParams", struct("filePath", input_aedat)));
     metadata = readmatrix(input_csv);
 
-    FRAME_MICROSECONDS = 10000;
-
+    FRAME_MICROSECONDS = 32000;
+    
     for r = metadata'
-        ind = find(r(2) <= data.data.polarity.timeStamp);
-        ind = find(data.data.polarity.timeStamp(ind) <= r(3));
+        ind = find((data.data.polarity.timeStamp <= r(3)) & (data.data.polarity.timeStamp >= r(2)));
         newaedat = struct;
         newaedat.data.polarity.polarity = data.data.polarity.polarity(ind);
         newaedat.data.polarity.x = data.data.polarity.x(ind);

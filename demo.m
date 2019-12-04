@@ -1,8 +1,14 @@
+%% Multi-Class SVM
+%% Demo Begin
+%% Initialize all to default
+% clc
+% clear all
+% close all
 %% number of samples and Class initialization 
-nOfSamples= ;
-nOfClassInstance=11;
-% Sample=rand(nOfSamples,60);
-class=%round(rand(nOfSamples,1)*(nOfClassInstance-1));
+nOfSamples=100;
+nOfClassInstance=10;
+Sample=rand(nOfSamples,60);
+class=round(rand(nOfSamples,1)*(nOfClassInstance-1));
 %% SVM Classification
 Model=svm.train(Sample,class);
 predict=svm.predict(Model,Sample);

@@ -9,7 +9,7 @@ X_train_wd = {};
 Y_train_wd = {};
 length_train = length(dir("D:\\EE269\\OutputDataTrain\\"))-2;
 tr_names = {dir("D:\\EE269\\OutputDataTrain\\").name}';
-for i=(round(length_train/2)+1):length_train
+for i=1:length_train
     p = "D:\\EE269\\OutputDataTrain\\" + string(tr_names{i+2});
     load (p);
     T=frames;
