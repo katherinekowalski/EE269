@@ -4,8 +4,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-from read_data import GestureDataSequence
-from models import get_cnn_model_1
+from read_data import GestureDataSequence, get_dataset
+from models import get_cnn_model_1, get_3dcnn_model_1, get_params
 
 from collections import defaultdict
 import logger
@@ -31,29 +31,23 @@ def get_args():
   }
 
 
-def get_params():
-  return {
-    "dense_reg": 3e-4,
-    "kernel_reg": 3e-4,
-    "learning_rate": 1e-3,
-    "kernel_sizes": [3, 5, 3, 3, 3],
-    "pool_sizes": [2,4,2,2,2],
-    "layer_channels": [8, 16, 24, 24, 24], 
-    "batch_size": 32,
-    "run_id": ''.join([random.choice(string.ascii_letters + string.digits) for n in range(10)]),
-  }
-
-def train(data_dir, params, epochs=10):
+def train(data_dir, params, epochs=20):
+  logger.info(f"run_id: {params['run_id']}")
   logger.info("getting model...")
   model = get_cnn_model_1(**params)
   logger.info("compiling model...")
-  opt = tf.train.AdamOptimizer(learning_rate=params["learning_rate"])
+  opt = tf.keras.optimizers.Adam(learning_rate=params["learning_rate"])
   model.compile(opt, loss="categorical_crossentropy", metrics=["accuracy", "categorical_crossentropy"])
   logger.info("training...")
-  history = model.fit_generator(
-    GestureDataSequence(params["batch_size"], dset="train", data_dir=data_dir),
-    validation_data=GestureDataSequence(params["batch_size"], dset="val", data_dir=data_dir), 
-    epochs=epochs)
+  # history = model.fit_generator(
+  #   GestureDataSequence(params["batch_size"], dset="train", data_dir=data_dir),
+  #   validation_data=GestureDataSequence(params["batch_size"], dset="val", data_dir=data_dir), 
+  #   epochs=epochs)
+  history = model.fit(get_dataset("train"),
+                      validation_data=get_dataset("val"),
+                      callbacks=[tf.keras.callbacks.ModelCheckpoint(f"cnn1_{params['run_id']}.chkpt", save_best_only=True)],
+                      validation_steps=60,
+                      epochs=epochs)
   logger.info(model.summary())
   return history
 
@@ -62,6 +56,7 @@ def main():
   args = get_args()
   params = get_params()
   train_result = train(args["data_dir"], params)
+  print (train_result.history)
 
 def tune():
   args = get_args()
