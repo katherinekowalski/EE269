@@ -3,10 +3,10 @@
 % 
 % Need to have the AedatTools package in the MATLAB path to get the 
 % FramesFromEvents function.
-INPUT_DIR = "D:\EE269\DvsGesture\DvsGesture";
-OUTPUT_DIR_TRAIN = "D:\EE269\data\train";
-OUTPUT_DIR_VAL = "D:\EE269\data\val";
-OUTPUT_DIR_TEST = "D:\EE269\data\test";
+INPUT_DIR = "DvsGesture";
+OUTPUT_DIR_TRAIN = "OutputDataTrain";
+OUTPUT_DIR_VAL = "OutputDataVal";
+OUTPUT_DIR_TEST = "OutputDataTest";
 
 for f = dir(INPUT_DIR)'
     disp(f.name);

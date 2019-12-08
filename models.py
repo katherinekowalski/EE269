@@ -5,8 +5,8 @@ import string, random
 
 def get_params():
   return {
-    "dense_reg": 5e-3,
-    "kernel_reg": 5e-3,
+    "dense_reg": 1e-3,
+    "kernel_reg": 1e-3,
     "learning_rate": 7.5e-4,
     "kernel_sizes": [3, 5, 3, 3, 3],
     "pool_sizes": [2,2,4,2,1],

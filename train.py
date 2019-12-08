@@ -2,7 +2,9 @@ import tensorflow as tf
 from tensorflow.keras import backend as K
 import numpy as np
 from matplotlib import pyplot as plt
+import seaborn as sn
 from tqdm import tqdm
+import sklearn.metrics
 
 from read_data import GestureDataSequence, get_dataset
 from models import get_cnn_model_1, get_3dcnn_model_1, get_params
@@ -16,7 +18,7 @@ import os
 import string
 import argparse
 
-# tf.compat.v1.enable_eager_execution()
+tf.compat.v1.enable_eager_execution()
 
 colab = False
 
@@ -39,10 +41,6 @@ def train(data_dir, params, epochs=20):
   opt = tf.keras.optimizers.Adam(learning_rate=params["learning_rate"])
   model.compile(opt, loss="categorical_crossentropy", metrics=["accuracy", "categorical_crossentropy"])
   logger.info("training...")
-  # history = model.fit_generator(
-  #   GestureDataSequence(params["batch_size"], dset="train", data_dir=data_dir),
-  #   validation_data=GestureDataSequence(params["batch_size"], dset="val", data_dir=data_dir), 
-  #   epochs=epochs)
   history = model.fit(get_dataset("train"),
                       validation_data=get_dataset("val"),
                       callbacks=[tf.keras.callbacks.ModelCheckpoint(f"cnn1_{params['run_id']}.chkpt", save_best_only=True)],
@@ -51,11 +49,42 @@ def train(data_dir, params, epochs=20):
   logger.info(model.summary())
   return history
 
+def test(chkpt_file, params):
+  logger.info(f"run_id: {params['run_id']}")
+  logger.info("getting model...")
+  model = get_cnn_model_1(**params)
+  logger.info("compiling model...")
+  opt = tf.keras.optimizers.Adam(learning_rate=params["learning_rate"])
+  model.compile(opt, loss="categorical_crossentropy", metrics=["accuracy", "categorical_crossentropy"])
+  model.build([None, 128, 128, 10])
+  model.load_weights(chkpt_file)
+  logger.info("testing...")
+  ds = get_dataset("val")
+  pred = []
+  true = []
+  for x, y in ds:
+    results = model.predict(x)
+    # print (type(results))
+    pred.append(np.argmax(results, axis=1))
+    true.append(np.argmax(y, axis=1))
+  P = np.concatenate(pred)
+  T = np.concatenate(true)
+  print (list(P))
+  print (list(T))
+  cmat = sklearn.metrics.confusion_matrix(P, T)
+  plt.matshow(cmat)
+  plt.savefig("cmat.png")
+
+  # predicted = 
+  logger.info(model.summary())
+  return history
+
 
 def main():
   args = get_args()
   params = get_params()
-  train_result = train(args["data_dir"], params)
+  # train_result = train(args["data_dir"], params)
+  test("cnn1_ApDJ3CjQVW.chkpt", params)
   print (train_result.history)
 
 def tune():
