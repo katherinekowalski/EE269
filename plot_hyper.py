@@ -45,8 +45,9 @@ def main():
     
     print (x)
     ux = list(set(x))
-    print ([np.mean([r for i, r in enumerate(results) if run_params[i][param] == uxi]) for uxi in ux])
-    plt.scatter(ux, [np.mean([r for i, r in enumerate(results) if param in run_params[i] and run_params[i][param] == uxi]) for uxi in ux], color="green")
+    ls = [np.mean([r for i, r in enumerate(results) if param in run_params[i] and run_params[i][param] == uxi]) for uxi in ux]
+    print (ls)
+    plt.scatter(ux, ls, color="green")
     plt.title(param)
     plt.xlabel(param)
     plt.ylabel("max val f2")
