@@ -11,6 +11,7 @@ import h5py
 
 import logger
 
+N_CLASSES = 10
 
 class GestureDataSequence(Sequence):
   def __init__(self, batch_size, dset="train", data_dir="../data"):
@@ -77,28 +78,33 @@ class GestureDataSequence(Sequence):
 
     plt.savefig(f"example_class{np.where(y[0])[0][0]}.png")
 
+DS_DIR = "tfrecords_data"
+
 def _parse_function(proto):
     keys_to_features = {'train/image': tf.io.FixedLenFeature([], tf.string),
                         "train/label": tf.io.FixedLenFeature([], tf.int64)}
     
     parsed_features = tf.io.parse_single_example(proto, keys_to_features)
     
-    parsed_features['train/image'] = tf.decode_raw(parsed_features['train/image'], tf.float64)
+    parsed_features['train/image'] = tf.decode_raw(parsed_features['train/image'], tf.float32)
     parsed_features['train/image'] = tf.cast(parsed_features['train/image'], tf.float32)
     parsed_features['train/image'] = tf.reshape(parsed_features['train/image'],[10, 128, 128])
+    parsed_features['train/image'] = parsed_features['train/image'] - tf.reduce_mean(parsed_features['train/image'],axis=(1,2))[:, None, None]
     parsed_features['train/image'] = tf.transpose(parsed_features['train/image'], [1,2,0])
-    parsed_features['train/label'] = tf.one_hot(parsed_features['train/label']-1, depth=11)
+    parsed_features['train/label'] = tf.one_hot(parsed_features['train/label']-1, depth=N_CLASSES)
+
 
 
     return parsed_features['train/image'], parsed_features["train/label"]
 
 def get_dataset(dset="train", batch_size=32):
-  filepath = "E:\\val.tfrecords"
+  filepath = os.path.join(DS_DIR, f"{dset}_half_prec_no_other_raw.tfrecords")
   dataset = tf.data.TFRecordDataset(filepath)
     
   # Maps the parser on every filepath in the array. You can set the number of parallel loaders here
   dataset = dataset.map(_parse_function, num_parallel_calls=8)
-  dataset = dataset.shuffle(4000)
+  dataset = dataset.repeat()
+  dataset = dataset.shuffle(3000)
   dataset = dataset.batch(batch_size)
   return dataset
 

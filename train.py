@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.keras import backend as K
 import numpy as np
 from matplotlib import pyplot as plt
 import seaborn as sn
@@ -7,7 +6,7 @@ from tqdm import tqdm
 import sklearn.metrics
 
 from read_data import GestureDataSequence, get_dataset
-from models import get_cnn_model_1, get_3dcnn_model_1, get_params
+from models import get_cnn_model_1, get_3dcnn_model_1, get_params, get_random_params
 
 from collections import defaultdict
 import logger
@@ -17,6 +16,7 @@ import json
 import os
 import string
 import argparse
+import pickle
 
 tf.compat.v1.enable_eager_execution()
 
@@ -33,7 +33,7 @@ def get_args():
   }
 
 
-def train(data_dir, params, epochs=20):
+def train(data_dir, params, epochs=30):
   logger.info(f"run_id: {params['run_id']}")
   logger.info("getting model...")
   model = get_cnn_model_1(**params)
@@ -44,7 +44,8 @@ def train(data_dir, params, epochs=20):
   history = model.fit(get_dataset("train"),
                       validation_data=get_dataset("val"),
                       callbacks=[tf.keras.callbacks.ModelCheckpoint(f"cnn1_{params['run_id']}.chkpt", save_best_only=True)],
-                      validation_steps=60,
+                      validation_steps=56,
+                      steps_per_epoch=200,
                       epochs=epochs)
   logger.info(model.summary())
   return history
@@ -83,8 +84,8 @@ def test(chkpt_file, params):
 def main():
   args = get_args()
   params = get_params()
-  # train_result = train(args["data_dir"], params)
-  test("cnn1_ApDJ3CjQVW.chkpt", params)
+  train_result = train(args["data_dir"], params)
+  # test("cnn1_ApDJ3CjQVW.chkpt", params)
   print (train_result.history)
 
 def tune():
@@ -94,8 +95,14 @@ def tune():
     logger.info("training with parameters:")
     logger.info(params)
     train_result = train(args["data_dir"], params)
+    log_data = train_result.history
+    for key, val in log_data.items():
+      log_data[key] = [float(i) for i in val]
+    log_data["params"] = params
+
+    print (log_data)
     with open(os.path.join(args["log_dir"], params["run_id"] + ".json"), "w+") as file:
-      json.dump(train_result, file)
+      json.dump(log_data, file)
 
 if __name__ == "__main__":
-  main()
+  tune()

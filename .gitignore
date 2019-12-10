@@ -6,3 +6,9 @@ data*
 AedatTools
 *.tar.gz
 DvsGesture*
+*.chkpt
+__pycache__
+**.pyc
+log*
+*_data*
+figures
